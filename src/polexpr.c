@@ -29,6 +29,10 @@ typedef struct node_stack_s { int sp; node_t *stack[MAX_STACK]; } node_stack_t;
 int init_stack(node_stack_t *s)
 { s->sp = -1; }
 
+//Check if stack is empty
+int is_stack_empty(node_stack_t *s)
+{ return (s->sp == -1); }
+
 //
 node_t *new_node(byte type, unsigned val, unsigned char *str)
 {
@@ -218,6 +222,7 @@ node_t *eval(unsigned char *buffer)
   unsigned steps = walk(buffer);
   unsigned char tmp_out[MAX_STR];
   unsigned bufflen = strlen(buffer);
+  unsigned o_par_cnt = 0, c_par_cnt = 0;
   node_stack_t *stL = malloc(sizeof(node_stack_t)), *stR = malloc(sizeof(node_stack_t));
 
   init_stack(stL);
@@ -300,6 +305,8 @@ node_t *eval(unsigned char *buffer)
 
 		printf("( ");
 		
+		o_par_cnt++;
+		
 		steps++;
 		steps += walk(buffer + steps);
 	      }
@@ -308,7 +315,7 @@ node_t *eval(unsigned char *buffer)
 		{
 		  node_t *op1 = NULL, *op2 = NULL, *opr = NULL;
 		  
-		  while (pop(stL, &opr) && opr->type != TYPE_LFT_PAR)
+		  while (pop(stL, &opr) && opr && opr->type != TYPE_LFT_PAR)
 		    {
 		      pop(stR, &op2);
 		      pop(stR, &op1);
@@ -318,35 +325,44 @@ node_t *eval(unsigned char *buffer)
 		      
 		      push(stR, opr);
 		    }
-
+		  
 		  printf(") ");
+
+		  c_par_cnt++;
+		  
 		  steps++;
 		  steps += walk(buffer + steps);
 		}
 	      else
-		valid = 0;
+		valid = 0; //Unknown character
     }
 
   node_t *op1 = NULL, *op2 = NULL, *opr = NULL;
   
-  while (pop(stL, &opr))
+  while (pop(stL, &opr) && valid)
     {
-      pop(stR, &op2);
-      pop(stR, &op1);
-      
-      opr->left  = op1;
-      opr->right = op2;
-      
-      push(stR, opr);
+      if (opr->type == TYPE_LFT_PAR)
+	valid = 0;
+      else
+	{
+	  pop(stR, &op2);
+	  pop(stR, &op1);
+	  
+	  opr->left  = op1;
+	  opr->right = op2;
+	  
+	  push(stR, opr);
+	}
     }
+
+  if (valid)
+    pop(stR, &opr);
   
+  valid = valid && is_stack_empty(stL) && is_stack_empty(stR) && (o_par_cnt == c_par_cnt);
+    
   free(stL);
   free(stR);
 
-  pop(stR, &opr);
-
-  printf("\n");
-  
   return (valid) ? opr : NULL;
 }
 
@@ -410,12 +426,12 @@ int main(int argc, char **argv)
   printf("Expression: ");
   node_t *n = eval(argv[1]);
   
-  if (!n) return printf("ERROR unrecognized character\n"), -1;
+  if (!n) return printf("ERROR invalid character or mismatching parentheses\n"), -1;
   
   printf("\nPolish notation: ");
   print_postfix(n); printf("\n\n");
-
-  printf("Expression tree: ");
+  
+  printf("Expression tree:\n");
   print_tree(n); printf("\n");
   
   return 0;

@@ -1,0 +1,49 @@
+This code take an arithmetic expression and turns it into RPN using a tree build from two stacks.
+First stack is for operations (+, -, *, /, %, ^), the second is for operands.
+
+Suppose the following expression: 2 * 34 / 4
+
+1) push_operand(2);
+2) push_operation(*);
+3) push_operand(34);
+4) compare priority of / and priority of top of the stack (*)
+          / and * are of equal priority therfore
+	  pop_operation(*);
+	  pop_operand(34);
+	  pop_operand(2);
+	  push_operand(2 * 34);  --> This implies linking the tree nodes to their leaves: * is the node, 2 is the left leaf, 34 the right left
+	  push_operation(/);
+
+5) push_operand(4)
+
+Empty stacks:
+      while (pop_operation(op))  --> while there are still unprocessed operations
+        {
+	   pop_operand(b);
+	   pop_operand(a);
+	   push_operand(a op b);
+	}
+
+pop_operand(tree_root);
+
+
+   tree_root  -->     /
+                    /   \ 
+                   *     4
+		 /   \
+		2     34
+
+This code is simply a proof of concept, it handles strings as variables.
+Parentheses are checked and spacing is allowed everywhere.
+
+Here are some test expressions:
+
+"(13 - 418) * x / y^2"
+"2^2^2^2^2^(i^2 - 2*x)"
+
+TODO:
+
+   . add syntactic support for functions, a hash table for variables and another one for functions
+   . add real values to numbers
+   . add expression value evaluation
+   . make a symbolic computation command line interface 
