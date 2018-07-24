@@ -1,5 +1,5 @@
-This code take an arithmetic expression and turns it into RPN using a tree build from two stacks.
-First stack is for operations (+, -, *, /, %, ^), the second is for operands.
+This code takes an arithmetic expression and turns it into RPN using a tree built from two stacks.
+The first stack is for operations (+, -, *, /, %, ^), the second is for operands.
 
 Suppose the following expression: 2 * 34 / 4
 
@@ -36,14 +36,15 @@ pop_operand(tree_root);
 This code is simply a proof of concept, it handles strings as variables.
 Parentheses are checked and spacing is allowed everywhere.
 
-Here are some test expressions:
+Some test expressions: (keep the quotes when spacing)
 
 "(13 - 418) * x / y^2"
 "2^2^2^2^2^(i^2 - 2*x)"
 
 TODO:
 
+   . parentheses location
    . add syntactic support for functions, a hash table for variables and another one for functions
    . add real values to numbers
-   . add expression value evaluation
+   . add expression value evaluation (i.e. with x = 2: 2* x - 3 = 1)
    . make a symbolic computation command line interface 
