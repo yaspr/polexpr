@@ -47,4 +47,13 @@ TODO:
    . add syntactic support for functions, a hash table for variables and another one for functions
    . add real values to numbers
    . add expression value evaluation (i.e. with x = 2: 2* x - 3 = 1)
-   . make a symbolic computation command line interface 
+   . make a symbolic computation command line interface
+
+
+Compilation:
+
+# cd src
+# make
+# make test
+
+The binary file is in bin.
