@@ -54,6 +54,7 @@ Compilation:
 
 # cd src
 # make
-# make test
+# make test E='"(13 - 418) * x / y^2"'
+# make test E='"2^2^2^2^2^(i^2 - 2*x)"'
 
 The binary file is in bin.
